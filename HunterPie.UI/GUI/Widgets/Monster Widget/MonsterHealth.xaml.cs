@@ -422,7 +422,7 @@ namespace HunterPie.GUI.Widgets
                     ShowOnlyTargetMonster();
                     break;
                 case MonsterBarMode.ShowAllButHideInactive:
-                    ShowAllMonsterAndHideUnactive();
+                    ShowAllMonsterAndHideInactive();
                     break;
                 case MonsterBarMode.ShowAllOrSelected:
                     ShowAllOrSelected();
@@ -450,8 +450,7 @@ namespace HunterPie.GUI.Widgets
 
 
         // Show all monsters but hide inactive
-        // FIXME: typo
-        private void ShowAllMonsterAndHideUnactive()
+        private void ShowAllMonsterAndHideInactive()
         {
             if (Context == null || !Context.IsAlive) { Visibility = Visibility.Collapsed; return; }
             StartVisibilityTimer();
