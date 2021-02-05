@@ -437,7 +437,7 @@ namespace HunterPie.GUI.Widgets
             else { Visibility = Visibility.Visible; }
             if (Context.IsSelect == 1)
             { // this monster selected
-                WidthScaleFactor = 5.0 / 3;
+                WidthScaleFactor = 1;
                 Opacity = 1;
             }
             else if (Context.IsSelect == 0)
@@ -475,7 +475,7 @@ namespace HunterPie.GUI.Widgets
             else
             {
                 Visibility = Visibility.Visible;
-                WidthScaleFactor = 500.0/300;
+                WidthScaleFactor = 1;
                 Opacity = 1;
 
             }
