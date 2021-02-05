@@ -58,7 +58,10 @@ namespace HunterPie.GUI.Widgets.DPSMeter.Parts
                 case DamagePlotMode.CumulativeTotal:
                     Series.ItemsSource = Data = DamagePoints;
                     break;
-
+                case DamagePlotMode.RollingDps:
+                    Data = new ObservableCollection<DataPoint>(DamageToRollingDps(DamagePoints));
+                    Series.ItemsSource = Data;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
@@ -88,8 +91,46 @@ namespace HunterPie.GUI.Widgets.DPSMeter.Parts
             // using DPS * 1000, since we don't show any scales on UI. That way we can use integers instead of pesky doubles
             : new DataPoint(dmgPoint.X, (int)(dmgPoint.Y / dmgPoint.X * 1000 * 1000));
 
+        private const int ROLLING_DPS_WINDOW_SIZE = 60 * 1000;
 
-        // ReSharper disable CompareOfFloatsByEqualityOperator - we're operating with int damage values, data loss is impossible here
+        private static IEnumerable<DataPoint> DamageToRollingDps(IList<DataPoint> damagePoints)
+        {
+            var pastIterator = damagePoints.GetEnumerator();
+            var Y60SecondsAgo = 0.0;
+            pastIterator.MoveNext(); //Move to first item in iterator
+            for (int i = 0; i < damagePoints.Count; i++)
+            {
+                DataPoint currentPoint = damagePoints[i];
+                double dps;
+                if (currentPoint.X < ROLLING_DPS_WINDOW_SIZE)
+                {
+                    dps = currentPoint.Y / currentPoint.X;
+                }
+                else
+                {
+                    //assuming the damage points don't come in regularly we need to iterate over the "pastIterator" until we find the damage value from N seconds earlier
+                    //We do this by looking for the last point before our rolling window starts and using that damage value (because that damage value will be the value at the start of the window)
+                    while (true)
+                    {
+                        if (pastIterator.Current.X <= currentPoint.X - ROLLING_DPS_WINDOW_SIZE)
+                        {
+                            Y60SecondsAgo = pastIterator.Current.Y;
+                            pastIterator.MoveNext();
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    var damageDifference = currentPoint.Y - Y60SecondsAgo;
+                    dps = damageDifference / ROLLING_DPS_WINDOW_SIZE;
+
+                }
+                yield return new DataPoint(currentPoint.X, dps);
+            }
+        }
+
+            // ReSharper disable CompareOfFloatsByEqualityOperator - we're operating with int damage values, data loss is impossible here
         public void UpdateDamage(int now)
         {
             if (!Member.IsInParty)
@@ -129,9 +170,15 @@ namespace HunterPie.GUI.Widgets.DPSMeter.Parts
             DataPoint newPoint = new DataPoint(now, dmg);
             DamagePoints.Add(newPoint);
 
-            if (Mode == DamagePlotMode.Dps)
+            switch (Mode)
             {
-                UpdateDpsData(now, ref newPoint);
+                case DamagePlotMode.Dps:
+                    UpdateDpsData(now, ref newPoint);
+                    break;
+                case DamagePlotMode.RollingDps:
+                    UpdateRollingDps(DamagePoints.IndexOf(newPoint));
+
+                    break;
             }
         }
 
@@ -150,6 +197,32 @@ namespace HunterPie.GUI.Widgets.DPSMeter.Parts
                 Data.RemoveAt(Data.Count - 1);
             }
             Data.Add(dpsPoint);
+        }
+        private int __dataPoint30sAgoIndex;
+        void UpdateRollingDps(int index)
+        {
+            var currentDamagePoint = DamagePoints[index];
+            if (currentDamagePoint.X == 0)
+            {
+                Data.Add(new DataPoint(currentDamagePoint.X, 0));
+            }
+            else if (currentDamagePoint.X < ROLLING_DPS_WINDOW_SIZE)
+            {
+                Data.Add(new DataPoint(currentDamagePoint.X, currentDamagePoint.Y * 1000 / currentDamagePoint.X));
+            }
+            else
+            {
+                while (
+                    __dataPoint30sAgoIndex < DamagePoints.Count - 1 &&
+                    currentDamagePoint.X - DamagePoints[__dataPoint30sAgoIndex + 1].X  > ROLLING_DPS_WINDOW_SIZE)
+                {
+                    __dataPoint30sAgoIndex++;
+                }
+
+                var damagePoint30sAgo = DamagePoints[__dataPoint30sAgoIndex];
+                var damageInWindow = currentDamagePoint.Y - damagePoint30sAgo.Y;
+                Data.Add(new DataPoint(currentDamagePoint.X, damageInWindow * 1000 / (currentDamagePoint.X-damagePoint30sAgo.X)));
+            }
         }
     }
 }

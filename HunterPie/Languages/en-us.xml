@@ -729,6 +729,7 @@
       <String ID="DAMAGE_PLOT_MODE_DESC" Name="Changes the damage mode."/>
       <String ID="DAMAGE_PLOT_MODE_0" Name="Cumulative damage total"/>
       <String ID="DAMAGE_PLOT_MODE_1" Name="Damage per second"/>
+      <String ID="DAMAGE_PLOT_MODE_2" Name="Rolling Damage per second"/>
       <String ID="DAMAGE_PLOT_POLL_INTERVAL" Name="Damage plot poll interval"/>
       <String ID="DAMAGE_PLOT_POLL_INTERVAL_DESC" Name="Delay between plot updates when there are no damage updates. Lower the value - higher CPU cost. &#13;(E.g: Setting this to 200 will make HunterPie update the plot 5 times per second)."/>
 
