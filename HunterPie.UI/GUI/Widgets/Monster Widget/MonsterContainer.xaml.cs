@@ -59,10 +59,11 @@ namespace HunterPie.GUI.Widgets
             }
             foreach (MonsterHealth m in VisibleMonsters)
             {
-                if (m.Width != newSize)
+                var monsterNewSize = newSize * m.WidthScaleFactor;
+                if (m.Width != monsterNewSize)
                 {
-                    m.Width = newSize;
-                    m.ChangeBarsSizes(newSize);
+                    m.Width = monsterNewSize;
+                    m.ChangeBarsSizes(monsterNewSize);
                 }
             }
         }

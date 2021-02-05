@@ -45,6 +45,8 @@ namespace HunterPie.GUI.Widgets
         private Monster Context;
         private Timer VisibilityTimer;
 
+        public double WidthScaleFactor { get; set; } = 1;
+
         // Animations
         private Storyboard ANIM_ENRAGEDICON;
 
@@ -435,14 +437,12 @@ namespace HunterPie.GUI.Widgets
             else { Visibility = Visibility.Visible; }
             if (Context.IsSelect == 1)
             { // this monster selected
-                Width = 500;
-                ChangeBarsSizes(Width);
+                WidthScaleFactor = 5.0 / 3;
                 Opacity = 1;
             }
             else if (Context.IsSelect == 0)
             { // nothing selected, show all
-                Width = 300;
-                ChangeBarsSizes(Width);
+                WidthScaleFactor = 1;
                 Opacity = 1;
             }
             else { Visibility = Visibility.Collapsed; } // another monster selected, hide this monster
@@ -455,8 +455,7 @@ namespace HunterPie.GUI.Widgets
         {
             if (Context == null || !Context.IsAlive) { Visibility = Visibility.Collapsed; return; }
             StartVisibilityTimer();
-            Width = 300;
-            ChangeBarsSizes(Width);
+            WidthScaleFactor = 1;
             Opacity = 1;
         }
 
@@ -465,8 +464,7 @@ namespace HunterPie.GUI.Widgets
         {
             if (Context != null && Context.IsAlive) Visibility = Visibility.Visible;
             else { Visibility = Visibility.Collapsed; return; }
-            Width = 300;
-            ChangeBarsSizes(Width);
+            WidthScaleFactor = 1;
             Opacity = 1;
         }
 
@@ -477,8 +475,7 @@ namespace HunterPie.GUI.Widgets
             else
             {
                 Visibility = Visibility.Visible;
-                Width = 500;
-                ChangeBarsSizes(Width);
+                WidthScaleFactor = 500.0/300;
                 Opacity = 1;
 
             }
@@ -491,14 +488,12 @@ namespace HunterPie.GUI.Widgets
             else { Visibility = Visibility.Collapsed; return; }
             if (!Context.IsTarget)
             {
-                Width = 240;
-                ChangeBarsSizes(Width);
+                WidthScaleFactor = 0.8;
                 Opacity = 0.5;
             }
             else
             {
-                Width = 320;
-                ChangeBarsSizes(Width);
+                WidthScaleFactor = 1.4;
                 Opacity = 1;
             }
         }
