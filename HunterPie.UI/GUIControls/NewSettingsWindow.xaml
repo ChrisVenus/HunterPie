@@ -9,6 +9,9 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <helper:StaticSecondsConverter x:Key="StaticSecondsConverter"/>
+            <Style TargetType="{x:Type TextBox}">
+                <Setter Property="CaretBrush" Value="#FF9C9C9C" />
+            </Style>
             <Style TargetType="{x:Type TabItem}">
                 <Setter Property="Height" Value="30"/>
                 <Setter Property="Width" Value="250"/>
