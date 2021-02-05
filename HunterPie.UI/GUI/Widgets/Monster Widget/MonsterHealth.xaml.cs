@@ -232,6 +232,15 @@ namespace HunterPie.GUI.Widgets
 
         private void OnMonsterTargetted(object source, EventArgs args) => Dispatch(() =>
         {
+            if (Context.IsTarget)
+            {
+                var parent = (StackPanel)Parent;
+                if (parent.Children.IndexOf(this) != 0)
+                {
+                    parent.Children.Remove(this);
+                    parent.Children.Insert(0, this);
+                }
+            }
             SwitchSizeBasedOnTarget();
         });
 
